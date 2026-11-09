@@ -6,6 +6,8 @@ Load a macro, let the bot measure **how many frames of leeway every click has**,
 - Counter in the top left: how many clicks are 1, 2, 3, 4, 5-6, 7-8, 9-15, 16+ frames
 - Clicks **under 1 frame** (like 0.25) listed in the top right
 - Works with any TPS and FPS: frames = ticks x FPS / TPS
-- Toggle everything with **F7** (change it in the mod settings)
+- Toggle everything with **Hide overlay / Show overlay** in the FI menu, or **F7** with a keyboard (change it in the mod settings)
+
+iPhone / iPad: load macros with the iOS Files picker. Requires Geometry Dash with Geode installed.
 
 Open a level, press pause, tap **FI**.

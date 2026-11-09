@@ -59,7 +59,7 @@ void FIPopup::addToggle(char const* key, char const* text, bool def, CCPoint pos
 }
 
 bool FIPopup::init(PauseLayer* pause) {
-    if (!Popup::init(390.f, 270.f)) return false;
+    if (!Popup::init(390.f, 300.f)) return false;
     m_pause = pause;
     this->setTitle("Frame Inspector");
 
@@ -140,6 +140,13 @@ bool FIPopup::init(PauseLayer* pause) {
     m_resultLabel->setScale(0.62f);
     m_mainLayer->addChildAtPosition(m_resultLabel, Anchor::Center, {0.f, -56.f});
 
+    // A touch-accessible equivalent of F7, also available when no keyboard is attached.
+    m_overlaySpr = ButtonSprite::create("Hide overlay", "goldFont.fnt", "GJ_button_04.png", 0.8f);
+    m_overlaySpr->setScale(0.65f);
+    auto overlayBtn = CCMenuItemSpriteExtra::create(m_overlaySpr, this, menu_selector(FIPopup::onToggleOverlay));
+    overlayBtn->setID("toggle-overlay-button"_spr);
+    m_buttonMenu->addChildAtPosition(overlayBtn, Anchor::Center, {0.f, -85.f});
+
     // bottom buttons
     auto clearSpr = ButtonSprite::create("Clear", "goldFont.fnt", "GJ_button_06.png", 0.8f);
     clearSpr->setScale(0.75f);
@@ -206,6 +213,12 @@ void FIPopup::refresh() {
     m_resultLabel->setString(res.c_str());
     m_resultLabel->limitLabelWidth(370.f, 0.62f, 0.2f);
     m_scanSpr->setString(sc.scanning() ? "Stop scan" : "Scan level");
+    m_overlaySpr->setString(FIOverlay::hiddenByKey() ? "Show overlay" : "Hide overlay");
+}
+
+void FIPopup::onToggleOverlay(CCObject*) {
+    FIOverlay::toggleHidden();
+    this->refresh();
 }
 
 void FIPopup::onToggle(CCObject* sender) {
@@ -221,11 +234,18 @@ void FIPopup::onToggle(CCObject* sender) {
 
 void FIPopup::onLoadMacro(CCObject*) {
     file::FilePickOptions opts;
+#ifndef GEODE_IS_IOS
     opts.filters.push_back({"Macros", {"*.gdr", "*.gdr2", "*.json", "*.zbf", "*.re3", "*.slc", "*.txt", "*.xd"}});
     auto last = Mod::get()->getSavedValue<std::string>("last-macro-dir", "");
     std::error_code ec;
     if (!last.empty() && std::filesystem::exists(last, ec)) opts.defaultPath = std::filesystem::path(last);
     else opts.defaultPath = dirs::getGameDir();
+#else
+    // Geode 5.10.1 passes filters straight to UTType as filename extensions.
+    // Desktop wildcard filters can hide custom macro formats in iOS Files.
+    // Leave filters/defaultPath unset: Files imports a readable local copy,
+    // and loadMacroFile below validates its format instead.
+#endif
 
     m_pick.spawn(file::pick(file::PickMode::OpenFile, opts), [this](file::PickResult res) {
         if (res.isErr()) {

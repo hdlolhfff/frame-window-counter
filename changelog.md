@@ -18,3 +18,8 @@
 - Banner says "<level> has N one frames"
 - Optional click info line for troubleshooting
 - New scans store more info per click (old scans still work, rescanning is better)
+
+# Unreleased
+- Build and package the iOS arm64 mod alongside the desktop and Android versions
+- Allow custom macro and sound extensions to be selected in iOS Files
+- Add Hide overlay / Show overlay to the FI menu for touch screens

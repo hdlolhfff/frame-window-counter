@@ -133,17 +133,7 @@
 			"description": "Optional: pick your own .ogg/.mp3/.wav instead of the built-in ding.",
 			"default": "",
 			"control": {
-				"dialog": "open",
-				"filters": [
-					{
-						"description": "Sounds",
-						"files": [
-							"*.ogg",
-							"*.mp3",
-							"*.wav"
-						]
-					}
-				]
+				"dialog": "open"
 			}
 		},
 		"scan-title": {

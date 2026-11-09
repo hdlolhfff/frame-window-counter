@@ -18,6 +18,7 @@ protected:
     void onScan(cocos2d::CCObject*);
     void onClear(cocos2d::CCObject*);
     void onToggle(cocos2d::CCObject*);
+    void onToggleOverlay(cocos2d::CCObject*);
     void onHelp(cocos2d::CCObject*);
     void onRanges(cocos2d::CCObject*);
     void refresh();
@@ -31,6 +32,7 @@ protected:
     geode::TextInput* m_fps = nullptr;
     geode::TextInput* m_max = nullptr;
     ButtonSprite* m_scanSpr = nullptr;
+    ButtonSprite* m_overlaySpr = nullptr;
     geode::async::TaskHolder<geode::utils::file::PickResult> m_pick;
 };
 

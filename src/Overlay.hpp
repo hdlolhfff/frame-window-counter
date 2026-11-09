@@ -25,7 +25,7 @@ public:
     void onReset();               // new attempt
     void updateScanStatus();      // show/refresh/hide the scanning banner
 
-    static bool hiddenByKey();    // the toggle keybind hides everything
+    static bool hiddenByKey();    // current hidden state, shared by the keybind and pause-menu button
     static void toggleHidden();
 
 protected:

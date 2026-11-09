@@ -1,6 +1,6 @@
 # Frame Inspector (Geode mod for GD 2.2081)
 
-You load a macro, the bot plays it and measures **how many frames of leeway every click and release has**. Then you can play the level yourself with those numbers shown on every click. Press **F7** to hide or show them.
+You load a macro, the bot plays it and measures **how many frames of leeway every click and release has**. Then you can play the level yourself with those numbers shown on every click. Use **Hide overlay / Show overlay** in the pause screen's **FI** menu, or press **F7** with a keyboard.
 
 - **Circles pop up where you click** (and release, but only releases that matter, like wave/ship/robot) with that click's frame window. Colours: red = 1 frame, orange = 2, yellow = 3, white = 4, green = 5-6, cyan = 7-8, purple = 9-15, blue = 16+. **Pink = under 1 frame.**
 - **A ding** when you hit a frame perfect (setting: how hard a click has to be, or your own sound).
@@ -21,9 +21,26 @@ The easiest way: GitHub builds it for you, so you don't install anything.
 2. Upload **everything in this folder**, including the hidden `.github` folder. If the website upload skips `.github`, create the file `.github/workflows/multi-platform.yml` by hand and paste the contents in.
 3. Open the **Actions** tab and wait for "Build Geode Mod" to finish. It takes about 5–10 minutes.
 4. Click the finished run and download **Build Output**. Inside is `kai.frame-inspector.geode`.
-5. Put it in your GD mods folder. On Windows that's `Geometry Dash/geode/mods`. Restart GD.
+5. Install it using Geode's manual `.geode` file installer, or put it in your GD mods folder. On Windows that's `Geometry Dash/geode/mods`. Restart GD.
 
 If you already have the Geode CLI and SDK installed, run `geode build` in this folder instead.
+
+### iPhone / iPad
+
+Requires **iOS 14 or newer**, **Geometry Dash 2.2081**, and a working **Geode 5.10.1 or compatible 5.x** installation. This is a Geode mod, so it must be loaded by Geode inside the game.
+
+The workflow includes an **iOS** job on macOS that builds an **arm64 device binary** and includes it in the combined `kai.frame-inspector.geode` under **Build Output**. Save that file in Files, select it with Geode's manual mod installer, then restart the game.
+
+To use the mod, pause a level and tap **FI**. **Load** opens iOS Files; select a supported macro from On My iPhone/iPad or iCloud Drive. The picker shows all file types so custom extensions such as `.gdr2` remain selectable; the macro reader validates the selected file. Custom ding selection also shows all files; choose an `.ogg`, `.mp3`, or `.wav` sound. Use **Hide overlay / Show overlay** in the FI menu without a keyboard.
+
+For a local device build on a Mac with Xcode, the Geode SDK, and the Geode CLI installed:
+
+```sh
+cmake -S . -B build-ios -DCMAKE_SYSTEM_NAME=iOS -DGEODE_TARGET_PLATFORM=iOS -DCMAKE_BUILD_TYPE=Release -DGEODE_DONT_INSTALL_MODS=ON
+cmake --build build-ios --config Release --parallel
+```
+
+The SDK selects the iPhoneOS SDK and iOS 14 deployment target. The `GEODE_SDK` environment variable must point to your Geode SDK checkout. This target is for a real device, not the iOS Simulator.
 
 ## 2. Use it
 
@@ -39,6 +56,7 @@ If you already have the Geode CLI and SDK installed, run `geode build` in this f
 
 **Turning things off:**
 - **F7** hides or shows everything. You can change the key in the mod settings.
+- On touch screens, open **pause → FI → Hide overlay / Show overlay**.
 - In the FI menu, the **Markers / Counter / Hardest** toggles control each part.
 - **Clear** deletes the scan for this level.
 
@@ -89,8 +107,9 @@ Things to know:
 The bot's attempts and jumps are not added to your stats. A bot-made run can never complete the level for you: completions are blocked until the level has been restarted cleanly.
 
 ## Honest status
+- **iOS changes:** the build workflow and file pickers are configured for iOS, and game API calls were checked against the iOS bindings. An Apple SDK build and a real-device scan still need to be run; this Linux workspace cannot verify those.
 - **Has not been run in GD yet.** I don't have the game here.
-- **Compiles cleanly.** All the mod code passes a full compiler check against the real Geode 5.10.1 headers and the GD 2.2081 bindings.
+- **Build status:** the native core tests pass in this workspace. The updated full Geode mod still needs the workflow build, including compilation with Apple's SDK for iOS.
 - **The scan logic is tested.** The macro readers and the window search ran on a PC against a fake deterministic game:
   - 2,700+ windows were checked against a brute-force answer, with zero mismatches.
   - This included cases with deliberately broken save states.
