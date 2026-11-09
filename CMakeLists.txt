@@ -20,4 +20,13 @@ else()
 endif()
 
 add_subdirectory($ENV{GEODE_SDK} ${CMAKE_CURRENT_BINARY_DIR}/geode)
+
+# The iOS standalone FMOD bindings are generated before any FMOD class
+# headers. Geode 5.10.1 needs the C API declarations available at that point.
+if (GEODE_TARGET_PLATFORM STREQUAL "iOS")
+    target_compile_options(GeodeBindings PRIVATE
+        "$<$<COMPILE_LANGUAGE:CXX>:SHELL:-include Geode/fmod/fmod.h>"
+    )
+endif()
+
 setup_geode_mod(${PROJECT_NAME})
