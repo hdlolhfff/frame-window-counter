@@ -23,3 +23,4 @@
 - Build and package the iOS arm64 mod alongside the desktop and Android versions
 - Allow custom macro and sound extensions to be selected in iOS Files
 - Add Hide overlay / Show overlay to the FI menu for touch screens
+- Supply FMOD C declarations when compiling the generated iOS bindings with Geode 5.10.1

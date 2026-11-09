@@ -107,9 +107,9 @@ Things to know:
 The bot's attempts and jumps are not added to your stats. A bot-made run can never complete the level for you: completions are blocked until the level has been restarted cleanly.
 
 ## Honest status
-- **iOS changes:** the build workflow and file pickers are configured for iOS, and game API calls were checked against the iOS bindings. An Apple SDK build and a real-device scan still need to be run; this Linux workspace cannot verify those.
+- **iOS build verified:** [the iOS job passed](https://github.com/hdlolhfff/frame-window-counter/actions/runs/42723442254/job/129522910378) for source commit `0a37333`. The downloaded `.geode` contains an arm64 iOS device library with an iOS 14.0 deployment target and both sound resources. This does not verify gameplay on a real device.
 - **Has not been run in GD yet.** I don't have the game here.
-- **Build status:** the native core tests pass in this workspace. The updated full Geode mod still needs the workflow build, including compilation with Apple's SDK for iOS.
+- **Build status:** the native core tests pass in this workspace, and GitHub Actions compiled and packaged the iOS mod using Apple's SDK. The iOS build supplies the FMOD C header missing from Geode 5.10.1's generated standalone bindings.
 - **The scan logic is tested.** The macro readers and the window search ran on a PC against a fake deterministic game:
   - 2,700+ windows were checked against a brute-force answer, with zero mismatches.
   - This included cases with deliberately broken save states.
