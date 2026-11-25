@@ -180,13 +180,12 @@ void FIOverlay::rebuild() {
 void FIOverlay::ding(Ev const& e) {
     if (!Mod::get()->getSettingValue<bool>("ding")) return;
     if (e.bucket < 0 || e.frames > Mod::get()->getSettingValue<double>("ding-max-frames") + 1e-9) return;
-    auto custom = Mod::get()->getSettingValue<std::filesystem::path>("ding-file");
-    std::error_code ec;
+    auto custom = Mod::get()->getSettingValue<asp::fs::Path>("ding-file");
     std::string path;
-    if (!custom.empty() && std::filesystem::exists(custom, ec)) path = geode::utils::string::pathToString(custom);
+    if (custom.exists()) path = custom.string();
     else {
         auto file = Mod::get()->getResourcesDir() / (e.down ? "ding.ogg" : "ding-release.ogg");
-        path = std::filesystem::exists(file, ec) ? geode::utils::string::pathToString(file)
+        path = file.exists() ? file.string()
                                                  : std::string(e.down ? "ding.ogg"_spr : "ding-release.ogg"_spr);
     }
     if (auto fmod = FMODAudioEngine::get()) fmod->playEffect(path);

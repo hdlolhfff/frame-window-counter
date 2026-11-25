@@ -1,4 +1,5 @@
 #include "Popup.hpp"
+#include <asp/fs/std.hpp>
 
 #include <algorithm>
 #include <cmath>
@@ -237,11 +238,10 @@ void FIPopup::onLoadMacro(CCObject*) {
 #ifndef GEODE_IS_IOS
     opts.filters.push_back({"Macros", {"*.gdr", "*.gdr2", "*.json", "*.zbf", "*.re3", "*.slc", "*.txt", "*.xd"}});
     auto last = Mod::get()->getSavedValue<std::string>("last-macro-dir", "");
-    std::error_code ec;
-    if (!last.empty() && std::filesystem::exists(last, ec)) opts.defaultPath = std::filesystem::path(last);
+    if (!last.empty() && asp::fs::Path(last).exists()) opts.defaultPath = asp::fs::Path(last);
     else opts.defaultPath = dirs::getGameDir();
 #else
-    // Geode 5.10.1 passes filters straight to UTType as filename extensions.
+    // The Geode iOS picker passes filters straight to UTType as filename extensions.
     // Desktop wildcard filters can hide custom macro formats in iOS Files.
     // Leave filters/defaultPath unset: Files imports a readable local copy,
     // and loadMacroFile below validates its format instead.
@@ -254,7 +254,12 @@ void FIPopup::onLoadMacro(CCObject*) {
         }
         auto picked = std::move(res).unwrap();
         if (!picked) return;  // cancelled
-        auto loaded = loadMacroFile(*picked);
+        auto native = picked->toStdPath();
+        if (!native) {
+            FLAlertLayer::create("Frame Inspector", "The selected macro path could not be opened.", "OK")->show();
+            return;
+        }
+        auto loaded = loadMacroFile(native.unwrap());
         if (!loaded.ok) {
             FLAlertLayer::create("Frame Inspector", loaded.error, "OK")->show();
             return;
@@ -262,7 +267,7 @@ void FIPopup::onLoadMacro(CCObject*) {
         auto& sc = ScanController::get();
         sc.macro = std::move(loaded.macro);
         sc.macroPath = picked->string();
-        Mod::get()->setSavedValue<std::string>("last-macro-dir", picked->parent_path().string());
+        Mod::get()->setSavedValue<std::string>("last-macro-dir", picked->parent().value_or(asp::fs::PathView{}).string());
         // use the TPS stored in the macro
         m_tps->setString(fmtNum(sc.macro->tps));
         Mod::get()->setSavedValue<double>("tps", sc.macro->tps);

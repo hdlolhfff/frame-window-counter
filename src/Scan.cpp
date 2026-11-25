@@ -36,7 +36,6 @@ bool GeodeBackend::makeCheckpoint() {
 
 void GeodeBackend::dropCheckpoint() {
     if (m_cp) {
-        if (pl && static_cast<cocos2d::CCObject*>(pl->m_currentCheckpoint) == m_cp) pl->m_currentCheckpoint = nullptr;
         m_cp->release();
         m_cp = nullptr;
     }
@@ -53,8 +52,6 @@ bool GeodeBackend::restoreCheckpoint() {
     pl->m_isPracticeMode = false;
     selfReset = false;
     pl->m_checkpointArray->removeObject(m_cp, true);
-    // the game may keep a plain pointer to the checkpoint it just loaded; ours can be freed later
-    if (static_cast<cocos2d::CCObject*>(pl->m_currentCheckpoint) == m_cp) pl->m_currentCheckpoint = nullptr;
     pl->m_levelEndAnimationStarted = false;  // every save state is before the level end
     return true;
 }
