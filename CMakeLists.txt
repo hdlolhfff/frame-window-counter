@@ -1,5 +1,10 @@
 cmake_minimum_required(VERSION 3.25)
 
+# Build the iPhoneOS device slice even when the build host is an Intel Mac.
+if(CMAKE_SYSTEM_NAME STREQUAL "iOS" OR GEODE_TARGET_PLATFORM STREQUAL "iOS")
+    set(CMAKE_OSX_ARCHITECTURES arm64 CACHE STRING "iOS device architecture")
+endif()
+
 # ==========================================
 # 1. 项目基础配置
 # ==========================================
