@@ -1,70 +1,25 @@
-name: Build Geode Mod
-
+name: Build Frame Window Counter iOS
 on:
-  workflow_dispatch:
   push:
-    branches:
-      - "**"
-
+    branches: [codex/frame-window-ios-build]
+  workflow_dispatch:
+permissions:
+  contents: read
 jobs:
-  build:
-    strategy:
-      fail-fast: false
-      matrix:
-        config:
-          # Windows
-          - name: Windows
-            os: windows-latest
-            configure-args: "-DCMAKE_C_COMPILER=clang-cl -DCMAKE_CXX_COMPILER=clang-cl"
-
-          # macOS
-          - name: macOS
-            os: macos-latest
-
-          # iOS
-          - name: iOS
-            os: macos-15
-            target: iOS
-
-          # Android
-          - name: Android32
-            os: ubuntu-latest
-            target: Android32
-
-          - name: Android64
-            os: ubuntu-latest
-            target: Android64
-
-    name: ${{ matrix.config.name }}
-    runs-on: ${{ matrix.config.os }}
-
+  ios:
+    runs-on: macos-15-intel
     steps:
       - uses: actions/checkout@v4
-
-      - name: Setup Latest CMake
-        uses: jwlawson/actions-setup-cmake@v2
-        with:
-          cmake-version: 'latest'
-
-      - name: Build the mod
+      - name: Build iPhone and iPad package
         uses: geode-sdk/build-geode-mod@dce36b35e1c3d9d8af92347760b12eba3caf4004
+        id: build
         with:
           sdk: given
           bindings-ref: acb2c10d5de79fecec11e6f91f5e929447738b2e
-          combine: true
-          target: ${{ matrix.config.target }}
-          configure-args: -DSKIP_BUILDING_CODEGEN=OFF ${{ matrix.config.configure-args }}
-
-  package:
-    name: Package builds
-    runs-on: ubuntu-latest
-    needs: ['build']
-
-    steps:
-      - uses: geode-sdk/build-geode-mod/combine@dce36b35e1c3d9d8af92347760b12eba3caf4004
-        id: build
-
+          configure-args: -DSKIP_BUILDING_CODEGEN=OFF
+          target: iOS
       - uses: actions/upload-artifact@v4
         with:
-          name: frame_window-universal
-          path: ${{ steps.build.outputs.build-output }}
+          name: Frame-Window-Counter-iOS
+          path: ${{ steps.build.outputs.build-output }}/*.geode
+          if-no-files-found: error
