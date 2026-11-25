@@ -37,8 +37,11 @@ jobs:
       - uses: actions/checkout@v7
 
       - name: Build the mod
-        uses: geode-sdk/build-geode-mod@main
+        uses: geode-sdk/build-geode-mod@dce36b35e1c3d9d8af92347760b12eba3caf4004
         with:
+          sdk: given
+          bindings-ref: acb2c10d5de79fecec11e6f91f5e929447738b2e
+          configure-args: -DSKIP_BUILDING_CODEGEN=OFF
           combine: true
           target: ${{ matrix.config.target }}
 
@@ -48,7 +51,7 @@ jobs:
     needs: ['build']
 
     steps:
-      - uses: geode-sdk/build-geode-mod/combine@main
+      - uses: geode-sdk/build-geode-mod/combine@dce36b35e1c3d9d8af92347760b12eba3caf4004
         id: build
 
       - uses: actions/upload-artifact@v7

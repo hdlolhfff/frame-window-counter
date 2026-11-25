@@ -46,7 +46,6 @@ cocos2d::ccColor3B unreliableColor();
 std::string windowText(LevelResults const& r, EventResult const& e, bool decimals);
 
 std::string levelKeyFor(int levelID, std::string const& levelName);
-std::filesystem::path resultsPath(std::string const& levelKey);
 bool saveResults(LevelResults const& r, std::string& err);
 std::optional<LevelResults> loadResults(std::string const& levelKey);
 bool deleteResults(std::string const& levelKey);

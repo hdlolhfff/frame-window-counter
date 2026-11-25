@@ -1,5 +1,7 @@
 #include "Results.hpp"
 
+#include <Geode/utils/file.hpp>
+
 #include <algorithm>
 #include <cmath>
 
@@ -90,7 +92,7 @@ std::string levelKeyFor(int levelID, std::string const& levelName) {
     return fmt::format("local_{}_{:08x}", safe, static_cast<uint32_t>(std::hash<std::string>{}(levelName)));
 }
 
-std::filesystem::path resultsPath(std::string const& levelKey) {
+static asp::fs::Path resultsPath(std::string const& levelKey) {
     return Mod::get()->getSaveDir() / "results" / (levelKey + ".json");
 }
 
@@ -127,15 +129,13 @@ bool saveResults(LevelResults const& r, std::string& err) {
         {"events", ev},
     });
     auto path = resultsPath(r.levelKey);
-    if (auto res = file::createDirectoryAll(path.parent_path()); res.isErr()) { err = res.unwrapErr(); return false; }
-    if (auto res = file::writeStringSafe(path, root.dump(0)); res.isErr()) { err = res.unwrapErr(); return false; }
+    if (auto res = file::createDirectoryAll(path.parent().value()); res.isErr()) { err = fmt::format("{}", res.unwrapErr()); return false; }
+    if (auto res = file::writeStringSafe(path, root.dump(0)); res.isErr()) { err = fmt::format("{}", res.unwrapErr()); return false; }
     return true;
 }
 
 std::optional<LevelResults> loadResults(std::string const& levelKey) {
     auto path = resultsPath(levelKey);
-    std::error_code ec;
-    if (!std::filesystem::exists(path, ec)) return std::nullopt;
     auto text = file::readString(path);
     if (text.isErr()) return std::nullopt;
     auto parsed = matjson::parse(text.unwrap());
@@ -184,8 +184,8 @@ std::optional<LevelResults> loadResults(std::string const& levelKey) {
 }
 
 bool deleteResults(std::string const& levelKey) {
-    std::error_code ec;
-    return std::filesystem::remove(resultsPath(levelKey), ec);
+    auto path = resultsPath(levelKey);
+    return path.exists() && asp::fs::removeFile(path).isOk();
 }
 
 } // namespace fi
