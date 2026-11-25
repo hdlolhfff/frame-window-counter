@@ -23,7 +23,7 @@ jobs:
 
           # iOS
           - name: iOS
-            os: macos-latest
+            os: macos-15
             target: iOS
 
           # Android
@@ -47,12 +47,13 @@ jobs:
           cmake-version: 'latest'
 
       - name: Build the mod
-        uses: geode-sdk/build-geode-mod@main
+        uses: geode-sdk/build-geode-mod@dce36b35e1c3d9d8af92347760b12eba3caf4004
         with:
-          sdk: v6.0.0-alpha.1
+          sdk: given
+          bindings-ref: acb2c10d5de79fecec11e6f91f5e929447738b2e
           combine: true
           target: ${{ matrix.config.target }}
-          configure-args: ${{ matrix.config.configure-args }}
+          configure-args: -DSKIP_BUILDING_CODEGEN=OFF ${{ matrix.config.configure-args }}
 
   package:
     name: Package builds
@@ -60,7 +61,7 @@ jobs:
     needs: ['build']
 
     steps:
-      - uses: geode-sdk/build-geode-mod/combine@main
+      - uses: geode-sdk/build-geode-mod/combine@dce36b35e1c3d9d8af92347760b12eba3caf4004
         id: build
 
       - uses: actions/upload-artifact@v4
